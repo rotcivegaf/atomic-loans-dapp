@@ -4,14 +4,10 @@
       <div class="relative">
         <select
           class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+          @change="onSelect($event)"
           v-model="optionSelected"
         >
-          <option
-            v-for="option in options"
-            v-bind:value="option"
-            :key="option"
-            >{{ option }}</option
-          >
+          <option v-for="o in options" :value="o" :key="o">{{ o }}</option>
         </select>
         <div
           class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
@@ -29,36 +25,12 @@
       </div>
 
       <div class="container py-2">
-        <div class="my-2">
+        <div v-for="(i, index) in inputs" :key="index">
           <input
-            class="border rounded py-1 px-3"
-            id="Operator"
+            class="border rounded py-1 px-3 my-1"
+            :id="i.items"
             type="text"
-            placeholder="Operator"
-          />
-        </div>
-        <div class="my-2">
-          <input
-            class="border rounded py-1 px-3"
-            id="Token"
-            type="text"
-            placeholder="Token"
-          />
-        </div>
-        <div class="my-2">
-          <input
-            class="border rounded py-1 px-3"
-            id="Fee"
-            type="text"
-            placeholder="Fee"
-          />
-        </div>
-        <div class="my-2">
-          <input
-            class="border rounded py-1 px-3"
-            id="Amount"
-            type="text"
-            placeholder="Amount"
+            :placeholder="i.text"
           />
         </div>
       </div>
@@ -83,7 +55,13 @@ export default {
   data() {
     return {
       optionSelected: "",
-      options: ["Sign Transaction", "Provide as Signature", "Provide as VRS"]
+      options: ["Sign Transaction", "Provide as Signature", "Provide as VRS"],
+      inputs: [
+        { text: "Operator" },
+        { text: "Token" },
+        { text: "Fee" },
+        { text: "Amount" }
+      ]
     };
   },
 
@@ -91,6 +69,39 @@ export default {
     this.optionSelected = this.options[0];
   },
 
-  methods: {}
+  methods: {
+    onSelect(event) {
+      switch (event.target.value) {
+        case this.options[0]:
+          this.inputs = [
+            { text: "Operator" },
+            { text: "Token" },
+            { text: "Fee" },
+            { text: "Amount" }
+          ];
+          break;
+        case this.options[1]:
+          this.inputs = [
+            { text: "Operator" },
+            { text: "Signature" },
+            { text: "Token" },
+            { text: "Fee" },
+            { text: "Amount" }
+          ];
+          break;
+        case this.options[2]:
+          this.inputs = [
+            { text: "Operator" },
+            { text: "V" },
+            { text: "R" },
+            { text: "S" },
+            { text: "Token" },
+            { text: "Fee" },
+            { text: "Amount" }
+          ];
+          break;
+      }
+    }
+  }
 };
 </script>
