@@ -4,10 +4,14 @@
       <div class="relative">
         <select
           class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+          v-model="optionSelected"
         >
-          <option>Sign Transaction</option>
-          <option>Provide as Signature</option>
-          <option>Provide as VRS</option>
+          <option
+            v-for="option in options"
+            v-bind:value="option"
+            :key="option"
+            >{{ option }}</option
+          >
         </select>
         <div
           class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
@@ -62,7 +66,7 @@
       <standard-button
         class="row flex right-0 bottom-0"
         @custom-click="goToCoin(a.id)"
-        :title="'Sign'"
+        :title="optionSelected | getFirstWord"
       />
     </div>
   </form>
@@ -77,7 +81,14 @@ export default {
   components: { StandardButton },
 
   data() {
-    return {};
+    return {
+      optionSelected: "",
+      options: ["Sign Transaction", "Provide as Signature", "Provide as VRS"]
+    };
+  },
+
+  created() {
+    this.optionSelected = this.options[0];
   },
 
   methods: {}

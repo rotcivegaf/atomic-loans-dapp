@@ -26,8 +26,17 @@ const toBasePorcent = function(fee) {
   return `${Number(fee).toFixed(2)} %`;
 };
 
+const getFirstWord = function(phrase) {
+  if (!phrase) {
+    return "";
+  }
+
+  return phrase.split(" ", 2)[0];
+};
+
 export default {
   toShortVrs,
   toShortAddress,
-  toBasePorcent
+  toBasePorcent,
+  getFirstWord
 };

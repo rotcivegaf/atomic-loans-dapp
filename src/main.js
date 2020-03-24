@@ -11,6 +11,7 @@ Vue.use(VueSpinners);
 Vue.filter("shortVrs", filters.toShortVrs);
 Vue.filter("shortAddress", filters.toShortAddress);
 Vue.filter("basePorcent", filters.toBasePorcent);
+Vue.filter("getFirstWord", filters.getFirstWord);
 
 Vue.config.productionTip = false;
 
