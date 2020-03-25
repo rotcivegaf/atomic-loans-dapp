@@ -5,7 +5,8 @@ const dummyData = [
     signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "10000"
+    fee: "10000",
+    amount: "123456"
   },
   {
     vrs:
@@ -13,7 +14,8 @@ const dummyData = [
     signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "12345"
+    fee: "12345",
+    amount: "123456789012"
   },
   {
     vrs:
@@ -21,7 +23,8 @@ const dummyData = [
     signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
     token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "1"
+    fee: "1",
+    amount: "123456789012345678901"
   }
 ];
 

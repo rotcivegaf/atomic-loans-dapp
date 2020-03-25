@@ -4,7 +4,7 @@ import "@/assets/css/tailwind.css";
 import { VueSpinners } from "@saeris/vue-spinners";
 
 import router from "@/router";
-import filters from "@/filters";
+import filters from "@/utils/filters";
 
 Vue.use(VueSpinners);
 
@@ -12,6 +12,7 @@ Vue.filter("shortVrs", filters.toShortVrs);
 Vue.filter("shortAddress", filters.toShortAddress);
 Vue.filter("basePorcent", filters.toBasePorcent);
 Vue.filter("getFirstWord", filters.getFirstWord);
+Vue.filter("toFormatNumber", filters.toFormatNumber);
 
 Vue.config.productionTip = false;
 

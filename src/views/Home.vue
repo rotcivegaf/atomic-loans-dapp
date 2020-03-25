@@ -12,7 +12,7 @@
 
 <script>
 import SignatureTable from "@/components/SignatureTable";
-import api from "@/api";
+import api from "@/utils/api";
 
 export default {
   name: "Home",

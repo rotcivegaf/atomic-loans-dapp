@@ -47,7 +47,7 @@
           >
         </td>
         <td>{{ s.fee | basePorcent }}</td>
-        <td>123445</td>
+        <td>{{ s.amount | toFormatNumber }}</td>
       </tr>
     </tbody>
   </table>
