@@ -1,6 +1,6 @@
 import Web3 from "web3";
 
-export async function instanceWeb3() {
+const instanceWeb3 = async function() {
   let web3Instance = null;
 
   if (window.ethereum) {
@@ -25,8 +25,19 @@ export async function instanceWeb3() {
     "Non-Ethereum browser detected. You should consider trying MetaMask!"
   );
   throw new Error("MetaMask missing");
-}
+};
 
-export function web3() {
-  return Web3;
-}
+const getUser = async function(web3) {
+  const accounts = await web3.eth.getAccounts((err, accounts) => {
+    if (err)
+      console.error("web3 error", err);
+    return accounts;
+  });
+
+  return web3.utils.toChecksumAddress(accounts[0]);
+};
+
+export default {
+  instanceWeb3,
+  getUser,
+};

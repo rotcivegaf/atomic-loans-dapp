@@ -23,7 +23,7 @@ export default new Router({
       component: About
     },
     {
-      path: "/signature-detail/:vrs",
+      path: "/signature-detail/:sig",
       name: "SignatureDetail",
       component: SignatureDetail
     },

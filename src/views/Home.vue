@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div class="container mt-5">
     <beat-loader
+      class="text-center"
       :loading="isLoading"
-      :color="'#68d319'"
+      :color="'#428bca'"
       :size="50"
       :margin="'6px'"
     />
@@ -30,8 +31,8 @@ export default {
     this.isLoading = true;
     api
       .getSignatures()
-      .then(signatures => (this.signatures = signatures))
-      .finally(() => (this.isLoading = false));
+      .then(signatures => this.signatures = signatures)
+      .finally(() => this.isLoading = false);
   }
 };
 </script>

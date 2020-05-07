@@ -1,44 +1,41 @@
-const dummyData = [
-  {
-    vrs:
-      "0x303c4044d57e17e17bf77fa5bcbb1dc8587281af861ad23fbaa9f3139e3165b9af85b62b4951173b50",
-    signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "10000",
-    amount: "123456"
-  },
-  {
-    vrs:
-      "0x303c4044d57e17e17bf77fa5bcbb1dc8587281af861ad23fbaa9f3139e3165b9af85b62b4951173b51",
-    signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "12345",
-    amount: "123456789012"
-  },
-  {
-    vrs:
-      "0x303c4044d57e17e17bf77fa5bcbb1dc8587281af861ad23fbaa9f3139e3165b9af85b62b4951173b52",
-    signer: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    operator: "0x8fD00f170FDf3772C5ebdCD90bF257316c69BA45",
-    token: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-    fee: "1",
-    amount: "123456789012345678901"
-  }
-];
+import axios from "axios";
+
+const atomicErc721LoanAddress = "0xF6F8e3C079f8F71BE39a9046DDad5F9E591d2e74";
+const urlBase = "https://signature-vault.herokuapp.com/";
 
 async function getSignatures() {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return dummyData;
+  try {
+    const ret = await axios.get(urlBase + "signatures/");
+    return ret.data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-async function getSignature(vrs) {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  return dummyData.find(x => x.vrs === vrs);
+async function getSignature(sig) {
+  console.log(urlBase + "signature/" + sig);
+  try {
+    const ret = await axios.get(urlBase + "signature/" + sig);
+    return JSON.parse(ret.data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function saveSignature(signature) {
+  axios
+    .post(urlBase + "addSignature/", signature)
+    .then(function(response) {
+      console.log(response);
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
 }
 
 export default {
+  atomicErc721LoanAddress,
   getSignatures,
-  getSignature
+  getSignature,
+  saveSignature
 };

@@ -1,59 +1,51 @@
 <template>
-  <form class="relative">
-    <div>
-      <div class="relative">
-        <select
-          class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-          @change="onSelect($event)"
-          v-model="optionSelected"
-        >
-          <option v-for="o in options" :value="o" :key="o">{{ o }}</option>
-        </select>
-        <div
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-        >
-          <svg
-            class="fill-current h-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-sm-4" />
+
+      <div class="col-sm-4">
+        <form class="review-form" @submit.prevent="onSubmit">
+          <div class="mb-2">
+            <select
+              class="bg-white px-2 py-2 rounded"
+              @change="onSelect($event)"
+              v-model="optionSelected"
+            >
+              <option v-for="o in options" :value="o" :key="o">{{ o }}</option>
+            </select>
+          </div>
+
+          <div
+            class="py-1 pr-8"
+            v-for="(i, index) in inputs"
+            :key="index"
+            v-show="i.show"
           >
-            <path
-              d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+            <input
+              :class="
+                i.valid == null
+                  ? 'rounded py-1 px-3'
+                  : i.valid
+                  ? 'rounded py-1 px-3 text-success'
+                  : 'rounded py-1 px-3 text-danger'
+              "
+              :id="i.items"
+              :type="i.type"
+              :placeholder="i.text"
+              v-model="i.value"
+              @change="onInputChange($event, i)"
             />
-          </svg>
-        </div>
+          </div>
+          <standard-button class="mt-3" type="submit" :title="buttonName" />
+        </form>
       </div>
-
-      <div class="container py-2">
-        <div v-for="(i, index) in inputs" :key="index">
-          <input
-            :class="
-              i.valid == null
-                ? 'border rounded py-1 px-3 my-1'
-                : i.valid
-                ? 'border-2 rounded py-1 px-3 my-1 border-green-600'
-                : 'border-2 rounded py-1 px-3 my-1 border-red-600'
-            "
-            :id="i.items"
-            :type="i.type"
-            :placeholder="i.text"
-            @change="onInputChange($event, i)"
-          />
-        </div>
-      </div>
-
-      <standard-button
-        class="row flex right-0 bottom-0"
-        @custom-click="goToCoin(a.id)"
-        :title="optionSelected | getFirstWord"
-      />
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
-import web3Utils from "web3-utils";
-//import instanceWeb3 from "@/utils/web3.js";
+import web3Manager from "@/utils/web3Manager.js";
+import api from "@/utils/api";
 import StandardButton from "@/components/StandardButton";
 
 export default {
@@ -63,28 +55,45 @@ export default {
 
   data() {
     return {
+      web3: undefined,
+      user: undefined,
       optionSelected: "",
-      options: ["Sign Transaction", "Provide as Signature", "Provide as VRS"],
-      inputs: []
+      options: ["Sign Transaction and Provide", "Provide a Signature"],
+      buttonName: "Sign & Provide",
+      inputs: {
+        sig: { type: "signature", text: "Signature", valid: null },
+        token721: { type: "address", text: "Token721", valid: null },
+        tokenId: { type: "hex32", text: "TokenId", valid: null },
+        token20: { type: "address", text: "Token20", valid: null },
+        price: { type: "hex32", text: "Price", valid: null },
+        expiry: { type: "hex32", text: "Expiry", valid: null }
+      }
     };
   },
 
-  created() {
-    this.optionSelected = this.options[0];
-    this.onSelect({ target: { value: this.optionSelected } });
+  async created() {
+    this.web3 = await web3Manager.instanceWeb3();
+    this.user = await web3Manager.getUser(this.web3);
+
+    this.onSelect({ target: { value: this.options[0] } });
   },
 
   methods: {
     onInputChange(event, input) {
+      if (event.target.value === "") {
+        input.valid = null;
+        return;
+      }
+
       switch (input.type) {
         case "signature":
           input.valid =
             event.target.value.length === 132 &&
-            web3Utils.isHexStrict(event.target.value);
+            this.web3.utils.isHexStrict(event.target.value);
           break;
         case "address":
           try {
-            event.target.value = web3Utils.toChecksumAddress(
+            event.target.value = this.web3.utils.toChecksumAddress(
               event.target.value
             );
             input.valid = true;
@@ -92,53 +101,67 @@ export default {
             input.valid = false;
           }
           break;
-        case "bytes32":
-          input.valid =
-            event.target.value.length === 66 &&
-            web3Utils.isHexStrict(event.target.value);
-          break;
-        case "s":
-          input.valid =
-            event.target.value === "0" || event.target.value === "1";
-          break;
-        case "number":
-          // TODO
+        case "hex32":
+          // TODO check expiry and fee
           input.valid = true;
           break;
+      }
+
+      if (!input.valid) {
+        window.alert("Invalid data");
       }
     },
 
     onSelect(event) {
+      Object.keys(this.inputs).forEach(i => (this.inputs[i].show = true));
+      this.optionSelected = event.target.value;
+
       switch (event.target.value) {
-        case this.options[0]:
-          this.inputs = [
-            { text: "Operator", type: "address", valid: null },
-            { text: "Token", type: "address", valid: null },
-            { text: "Fee", type: "number", valid: null },
-            { text: "Amount", type: "number", valid: null }
-          ];
+        case this.options[0]: // Sign Transaction and Provide
+          this.inputs.sig.show = false;
+
+          this.buttonName = "Sign & Provide";
           break;
-        case this.options[1]:
-          this.inputs = [
-            { text: "Operator", type: "address", valid: null },
-            { text: "Signature", type: "signature", valid: null },
-            { text: "Token", type: "address", valid: null },
-            { text: "Fee", type: "number", valid: null },
-            { text: "Amount", type: "number", valid: null }
-          ];
-          break;
-        case this.options[2]:
-          this.inputs = [
-            { text: "Operator", type: "address", valid: null },
-            { text: "V", type: "bytes32", valid: null },
-            { text: "R", type: "bytes32", valid: null },
-            { text: "S", type: "s", valid: null },
-            { text: "Token", type: "address", valid: null },
-            { text: "Fee", type: "number", valid: null },
-            { text: "Amount", type: "number", valid: null }
-          ];
+        case this.options[1]: // Provide a Signature
+          this.buttonName = "Provide";
           break;
       }
+    },
+
+    async onSubmit() {
+      const args = {};
+      try {
+        args.contract = api.atomicErc721LoanAddress;
+        args.token721 = this.inputs.token721.value;
+        args.tokenId = this.web3.utils.toHex(this.inputs.tokenId.value);
+        args.token20 = this.inputs.token20.value;
+        args.price = this.web3.utils.toHex(this.inputs.price.value);
+        args.expiry = this.web3.utils.toHex(this.inputs.expiry.value);
+
+        args.loanHash = this.web3.utils.soliditySha3(
+          { t: "address", v: args.contract },
+          { t: "address", v: args.token721 },
+          { t: "uint256", v: args.tokenId },
+          { t: "address", v: args.token20 },
+          { t: "uint256", v: args.price },
+          { t: "uint256", v: args.expiry }
+        );
+      } catch (error) {
+        window.alert("Invalid data");
+      }
+
+      switch (this.optionSelected) {
+        case this.options[0]: // Sign Transaction and Provide
+          args.sig = await this.web3.eth.sign(args.loanHash, this.user); // TODO: fix it, the signature its wrong
+          break;
+        case this.options[1]: // Provide a Signature
+          args.sig = this.inputs.sig.value;
+          break;
+      }
+
+      args.owner = this.web3.eth.accounts.recover(args.loanHash, args.sig);
+      if (args.owner === this.user) await api.saveSignature(args);
+      else window.alert("Ownership error");
     }
   }
 };

@@ -1,53 +1,38 @@
 <template>
-  <table>
+  <table class="table table-striped text-center">
     <thead>
-      <tr class="bg-gray-100 border-b-2 border-gray-400">
-        <th>
+      <tr class="text-primary">
+        <th scope="col">
           <span>Signatures</span>
         </th>
-        <th>Signer</th>
-        <th>Operator</th>
-        <th>Token</th>
-        <th>Fee %</th>
-        <th>Amount</th>
+        <th scope="col">Token 721</th>
+        <th scope="col">Token ID</th>
+        <th scope="col">Token 20</th>
+        <th scope="col">Price</th>
+        <th scope="col">expiry</th>
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="s in signatures"
-        :key="s.vrs"
-        class="border-b border-gray-200 hover:bg-gray-100 hover:bg-orange-100"
-      >
+      <tr v-for="s in signatures" :key="s.sig" class="text-primary">
         <td>
           <router-link
-            class="hover:underline text-green-600"
-            :to="{ name: 'SignatureDetail', params: { vrs: s.vrs } }"
-            >{{ s.vrs | shortVrs }}</router-link
+            :to="{ name: 'SignatureDetail', params: { sig: s.sig } }"
+            >{{ s.sig | shortAddress }}</router-link
           >
         </td>
         <td>
-          <a
-            class="hover:underline text-green-600"
-            :href="`https://etherscan.io/address/${s.signer}`"
-            >{{ s.signer | shortAddress }}</a
-          >
+          <a :href="`https://etherscan.io/address/${s.token721}`">{{
+            s.token721 | shortAddress
+          }}</a>
         </td>
+        <td>{{ s.tokenId | toFormatId }}</td>
         <td>
-          <a
-            class="hover:underline text-green-600"
-            :href="`https://etherscan.io/address/${s.operator}`"
-            >{{ s.operator | shortAddress }}</a
-          >
+          <a :href="`https://etherscan.io/address/${s.token20}`">{{
+            s.token20 | shortAddress
+          }}</a>
         </td>
-        <td>
-          <a
-            class="hover:underline text-green-600"
-            :href="`https://etherscan.io/address/${s.token}`"
-            >{{ s.token | shortAddress }}</a
-          >
-        </td>
-        <td>{{ s.fee | basePorcent }}</td>
-        <td>{{ s.amount | toFormatNumber }}</td>
+        <td>{{ s.price | toFormatPrice }}</td>
+        <td>{{ s.expiry | toDate }}</td>
       </tr>
     </tbody>
   </table>
@@ -65,28 +50,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-td {
-  padding: 5px 30px;
-  font-size: 0.6rem;
-  text-align: center;
-}
-
-th {
-  padding: 5px;
-  font-size: 0.6rem;
-}
-
-@media (min-width: 640px) {
-  td,
-  th {
-    padding: 5 px;
-    font-size: 1rem;
-  }
-
-  th {
-    padding: 12px;
-  }
-}
-</style>
